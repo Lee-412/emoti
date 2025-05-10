@@ -1,6 +1,11 @@
+cd deepface
 cd scripts
-chmod +x dockerize.sh
 ./dockerize.sh
 
-./gpt4all.run
+frontend
+
+
+cd deepface-react-ui
+npm install
+npm run start
 
