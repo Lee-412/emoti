@@ -91,7 +91,7 @@
 .container {
   display: flex;
   flex: 1;
-  padding: 96px 32px 72px 32px; /* Padding cho header/footer */
+  padding: 96px 32px 32px 32px; /* Padding cho header/footer */
   max-width: 1400px;
   width: 70%;
   margin: 0 auto;
@@ -101,7 +101,7 @@
 .chat-container {
   width: 90%; /* Tăng chiều rộng */
   max-width: 1200px;
-  height: 700px; /* Chiều cao cố định */
+  height: 800px; /* Chiều cao cố định */
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   overflow: hidden;
