@@ -4,19 +4,38 @@ import './LoginPage.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
+  const [password, setpassword] = useState('');
   const [isSignup, setIsSignup] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (!email.trim() || !username.trim()) return;
-
-    localStorage.setItem('user', username);
-    localStorage.setItem('email', email);
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) return;
+     const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+    console.log("check data", data);
+    const id = data.userId;
+    localStorage.setItem('user', JSON.stringify({ email, password, id }));
 
     navigate('/');
   };
 
+  const handleClickSignup = async () => {
+   
+    navigate('/signup');
+    setIsSignup(isSignup);
+    setEmail('');
+    setpassword('');
+  }
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -35,9 +54,9 @@ function LoginPage() {
         />
 
         <input
-          placeholder="Tên người dùng"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setpassword(e.target.value)}
         />
 
         <button onClick={handleSubmit}>
@@ -45,9 +64,9 @@ function LoginPage() {
         </button>
 
         <p className="switch-mode">
-          {isSignup ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}{' '}
-          <span onClick={() => setIsSignup(!isSignup)}>
-            {isSignup ? 'Đăng nhập ngay' : 'Tạo tài khoản'}
+          Chưa có tài khoản?
+          <span onClick={handleClickSignup}>
+            Tạo tài khoản
           </span>
         </p>
       </div>

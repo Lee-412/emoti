@@ -1,22 +1,31 @@
-import qaData from './chatbot_qa_10k.json';
+import stringSimilarity from 'string-similarity';
+
+function removeDiacritics(str) {
+  return str
+    .normalize('NFD')                    // tách dấu
+    .replace(/[\u0300-\u036f]/g, '')     // loại bỏ dấu
+    .replace(/đ/g, 'd')                  // chuẩn hóa "đ"
+    .replace(/Đ/g, 'D')
+    .replace(/[^\w\s.,?!]/gi, '')        // giữ lại chữ, số, khoảng trắng, dấu câu cơ bản
+    .toLowerCase();
+}
 
 export const askBot = async (prompt) => {
-  const input = prompt.trim().toLowerCase();
+  const cleanedInput = removeDiacritics(prompt);
 
-  // Duyệt toàn bộ key
-  for (const key of Object.keys(qaData)) {
-    const pureKey = key.split('#')[0].trim().toLowerCase();
-
-    // So sánh: nếu câu hỏi chứa đoạn key bất kỳ
-    if (
-      input.includes(pureKey) ||
-      pureKey.includes(input) || // để user gõ ngắn cũng match
-      input.startsWith(pureKey) ||
-      input.endsWith(pureKey)
-    ) {
-      return qaData[key];
+  try {
+    // Gọi API server (giống backend bạn cung cấp)
+    const response = await fetch(`http://localhost:8080/api/search?q=${cleanedInput}`);
+    const data = await response.json();
+    console.log("Response từ API:", data);
+    
+    if (data?.answer) {
+      return data.answer;
+    } else {
+      return "Xin lỗi, tôi chưa hiểu câu hỏi đó 😥";
     }
+  } catch (error) {
+    console.error("Lỗi kết nối API:", error);
+    return "Có lỗi xảy ra khi kết nối đến chatbot.";
   }
-
-  return "Xin lỗi, tôi chưa hiểu câu hỏi đó 😥";
 };
