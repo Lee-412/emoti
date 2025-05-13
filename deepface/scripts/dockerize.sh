@@ -11,7 +11,7 @@ cd ..
 # docker rm -f $(docker ps -a -q --filter "ancestor=deepface")
 
 # build deepface image
-docker build -t deepface .
+# docker build -t deepface .
 
 # copy weights from your local
 # docker cp ~/.deepface/weights/. <CONTAINER_ID>:/root/.deepface/weights/

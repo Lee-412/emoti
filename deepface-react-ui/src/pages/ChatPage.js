@@ -117,15 +117,29 @@ function ChatPage() {
       getVideo();
     }
   }, []);
+const [idleTimer, setIdleTimer] = useState(null);
 
   // Auto-analyze every 16 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
       captureImage("analyze");
-    }, 16000);
+    }, 20000);
 
     return () => clearInterval(intervalId);
   }, [base64Image]);
+
+useEffect(() => {
+  if (idleTimer) clearTimeout(idleTimer);
+
+  const timer = setTimeout(() => {
+    captureImage("analyze"); // chỉ gọi khi không gõ gì sau 10s
+  }, 10000); // 10 giây không gõ
+
+  setIdleTimer(timer);
+
+  return () => clearTimeout(timer);
+}, [userInput]);
+
 
   // Update chat history
   useEffect(() => {
@@ -412,7 +426,6 @@ function ChatPage() {
 
         const data = await response.json();
         if (data.text) {
-          // setUserInput(data.text);
           const question = data.text;
 
           setChatHistory((prev) => [
@@ -426,17 +439,17 @@ function ChatPage() {
 
           const botReply = await askBot(data.text);
 
-          const baseDelay = 0;
+          const baseDelay = 1000;
 
           const extraDelay = Math.min(
             Math.floor(botReply.length / 30) * 500,
-            3000
+            5000
           );
 
           const totalDelay = baseDelay + extraDelay;
 
           setTimeout(() => {
-            speakText(botReply);
+            // speakText(botReply);
             setChatHistory((prev) => [
               ...prev,
               {
@@ -487,7 +500,8 @@ function ChatPage() {
       if (last.sender === "bot") {
         const utterance = new SpeechSynthesisUtterance(last.text);
         utterance.lang = "vi-VN";
-        window.speechSynthesis.speak(utterance);
+        // window.speechSynthesis.speak(utterance);
+        speakText(last.text);
       }
     }
   }, [chatHistory]);
